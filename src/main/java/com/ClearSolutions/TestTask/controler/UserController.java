@@ -3,11 +3,13 @@ package com.ClearSolutions.TestTask.controler;
 import com.ClearSolutions.TestTask.dto.request.UserRequest;
 import com.ClearSolutions.TestTask.dto.response.UserResponse;
 import com.ClearSolutions.TestTask.model.User;
+import com.ClearSolutions.TestTask.service.Patcher;
 import com.ClearSolutions.TestTask.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,8 @@ public class UserController {
 
     private final UserService userService;
     private final ModelMapper modelMapper;
+    @Autowired
+    private Patcher<User> patcher;
 
     @PostMapping
     public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserRequest userRequest) {
@@ -37,13 +41,29 @@ public class UserController {
 
     @PutMapping("/{user_id}")
     public ResponseEntity<UserResponse> updateUserBuId(@PathVariable("user_id") long id,
-                                              @RequestBody @Valid UserRequest userRequest) {
+                                                       @RequestBody @Valid UserRequest userRequest) {
         log.debug(String.format("request to update user id: %d with values: %s", id, userRequest.toString()));
         User user = modelMapper.map(userRequest, User.class);
         user.setId(id);
         return new ResponseEntity<>(
                 modelMapper.map(
                         userService.update(user),
+                        UserResponse.class
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    @PatchMapping("/{user_id}")
+    public ResponseEntity<UserResponse> updateUserFieldsBuId(@PathVariable("user_id") long id,
+                                                             @RequestBody UserRequest userRequest) {
+        log.debug(String.format("request to update fields in user id: %d with values: %s", id, userRequest.toString()));
+        User user = modelMapper.map(userRequest, User.class);
+        User existedUser = userService.readById(id);
+        patcher.patch(existedUser, user);
+        return new ResponseEntity<>(
+                modelMapper.map(
+                        userService.update(existedUser),
                         UserResponse.class
                 ),
                 HttpStatus.OK
