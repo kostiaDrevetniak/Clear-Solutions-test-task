@@ -4,13 +4,18 @@ import com.ClearSolutions.TestTask.validation.anotation.ValidAge;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
+@Component
 public class AgeValidator implements ConstraintValidator<ValidAge, LocalDate> {
 
-    @Value("${user.valid-age}")
-    public int validAge;
+    public AgeValidator(@Value("${user.valid-age}") Integer validAge) {
+        this.validAge = validAge;
+    }
+
+    private final Integer validAge;
 
     @Override
     public boolean isValid(LocalDate birthDate, ConstraintValidatorContext constraintValidatorContext) {
