@@ -1,4 +1,4 @@
-package com.ClearSolutions.TestTask.dto.model;
+package com.ClearSolutions.TestTask.dto.request;
 
 import com.ClearSolutions.TestTask.validation.anotation.ValidAge;
 import jakarta.validation.constraints.NotBlank;
@@ -11,9 +11,8 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"id"})
-public class UserDto {
-    private Long id;
+@ToString()
+public class UserRequest {
     @NotBlank
     private String email;
     @NotBlank

@@ -1,6 +1,7 @@
 package com.ClearSolutions.TestTask.controler;
 
-import com.ClearSolutions.TestTask.dto.model.UserDto;
+import com.ClearSolutions.TestTask.dto.request.UserRequest;
+import com.ClearSolutions.TestTask.dto.response.UserResponse;
 import com.ClearSolutions.TestTask.model.User;
 import com.ClearSolutions.TestTask.service.UserService;
 import jakarta.validation.Valid;
@@ -23,26 +24,42 @@ public class UserController {
     private final ModelMapper modelMapper;
 
     @PostMapping
-    public ResponseEntity<User> create(@RequestBody @Valid UserDto userRequest) {
+    public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserRequest userRequest) {
         log.info(String.format("request to create user with values: %s", userRequest.toString()));
 
         User user = modelMapper.map(userRequest, User.class);
 
         User createdUser = userService.create(user);
 
-        return ResponseEntity.created(URI.create(String.format("api/users/%d", createdUser.getId()))).body(createdUser);
+        return ResponseEntity.created(URI.create(String.format("api/users/%d", createdUser.getId())))
+                .body(modelMapper.map(createdUser, UserResponse.class));
+    }
+
+    @PutMapping("/{user_id}")
+    public ResponseEntity<UserResponse> updateUserBuId(@PathVariable("user_id") long id,
+                                              @RequestBody @Valid UserRequest userRequest) {
+        log.debug(String.format("request to update user id: %d with values: %s", id, userRequest.toString()));
+        User user = modelMapper.map(userRequest, User.class);
+        user.setId(id);
+        return new ResponseEntity<>(
+                modelMapper.map(
+                        userService.update(user),
+                        UserResponse.class
+                ),
+                HttpStatus.OK
+        );
     }
 
     @GetMapping("/{user_id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable("user_id") long id) {
+    public ResponseEntity<UserResponse> getUserById(@PathVariable("user_id") long id) {
         log.info(String.format("request to get user with id: %s", id));
         return new ResponseEntity<>(
-                modelMapper.map(userService.readById(id), UserDto.class), HttpStatus.OK
+                modelMapper.map(userService.readById(id), UserResponse.class), HttpStatus.OK
         );
     }
 
     @DeleteMapping("/{user_id}")
-    public void delete(@PathVariable("user_id") long id) {
+    public void deleteUserById(@PathVariable("user_id") long id) {
         log.debug(String.format("request to delete user with id: %s", id));
         userService.delete(id);
     }
