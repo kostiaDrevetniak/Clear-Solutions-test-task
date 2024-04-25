@@ -13,14 +13,14 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @ToString()
 public class UserRequest {
-    @NotBlank
+    @NotBlank(message = "The 'email' cannot be blank")
     private String email;
-    @NotBlank
+    @NotBlank(message = "The 'firstName' cannot be blank")
     private String firstName;
-    @NotBlank
+    @NotBlank(message = "The 'lastName' cannot be blank")
     private String lastName;
     @ValidAge
-    @NotNull
+    @NotNull(message = "The 'birthDate' cannot be null")
     private LocalDate birthDate;
     private String address;
     private String phoneNumber;

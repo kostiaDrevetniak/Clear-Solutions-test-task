@@ -94,7 +94,7 @@ public class UserController {
                 .toList();
     }
 
-    @GetMapping
+    @GetMapping("/birtDate")
     public List<UserResponse> getAllUsersByBirthDateRange(@RequestParam("from")LocalDate from,
                                                           @RequestParam("to") LocalDate to){
         log.info(String.format("request to get all users with births date from %s to %s", from, to));
