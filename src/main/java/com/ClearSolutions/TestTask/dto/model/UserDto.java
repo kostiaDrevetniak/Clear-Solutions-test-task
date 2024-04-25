@@ -1,15 +1,9 @@
 package com.ClearSolutions.TestTask.dto.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
-import jakarta.validation.constraints.Email;
+import com.ClearSolutions.TestTask.validation.anotation.ValidAge;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -17,11 +11,17 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"id"})
 public class UserDto {
     private Long id;
+    @NotBlank
     private String email;
+    @NotBlank
     private String firstName;
+    @NotBlank
     private String lastName;
+    @ValidAge
+    @NotNull
     private LocalDate birthDate;
     private String address;
     private String phoneNumber;
