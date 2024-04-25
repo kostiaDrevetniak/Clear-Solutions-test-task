@@ -1,32 +1,40 @@
 package com.ClearSolutions.TestTask.service;
 
+import com.ClearSolutions.TestTask.exception.NullEntityReferenceException;
 import com.ClearSolutions.TestTask.model.User;
+import com.ClearSolutions.TestTask.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(SpringExtension.class)
-@ActiveProfiles("test")
 @SpringBootTest
-@Transactional
 public class UserServiceTest {
+
     @Autowired
     UserService userService;
+    @MockBean
+    UserRepository userRepository;
     User user;
 
     @BeforeEach
     public void setUp() {
         user = new User();
+        user.setId(1L);
         user.setEmail("TestUser@mail.com");
         user.setFirstName("User");
         user.setLastName("Test");
@@ -36,7 +44,9 @@ public class UserServiceTest {
     }
 
     @Test
-    void create() {
+    void createNormalUser() {
+        Mockito.when(userRepository.save(user)).thenReturn(user);
+
         User actual = userService.create(user);
 
         assertEquals(user, actual);
@@ -44,45 +54,97 @@ public class UserServiceTest {
     }
 
     @Test
-    void readById() {
-        User expected = userService.create(user);
-        User actual = userService.readById(expected.getId());
-
-        assertEquals(expected, actual);
+    public void crateNullUser() {
+        assertThrows(NullEntityReferenceException.class,
+                () -> userService.create(null));
     }
 
     @Test
-    void update() {
-        User expected = userService.create(user);
-        expected.setFirstName("Test");
-        expected.setLastName("User");
+    public void createNotValidUser() {
+        User invalidUser = new User();
+        invalidUser.setEmail("invalid email");
+        invalidUser.setFirstName("1");
+        invalidUser.setLastName("   \t\n");
+        invalidUser.setAddress("");
+        invalidUser.setBirthDate(LocalDate.now().plusMonths(6));
+        invalidUser.setPhoneNumber("380465857456481");
+
+        assertThrows(ConstraintViolationException.class, () -> userService.create(invalidUser));
+        try {
+            userService.create(invalidUser);
+        } catch (ConstraintViolationException ex) {
+            Set<ConstraintViolation<?>> constraintViolations = ex.getConstraintViolations();
+            assertEquals(6, constraintViolations.size());
+        }
+    }
+
+    @Test
+    void readByExistedId() {
+        Mockito.when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(user));
+
+        User actual = userService.readById(1);
+
+        assertEquals(user, actual);
+    }
+
+    @Test
+    void readByNotExistedId() {
+        assertThrows(EntityNotFoundException.class, () -> userService.readById(5));
+    }
+
+    @Test
+    void updateExistedUser() {
+        Mockito.when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(user));
+        user.setFirstName("Test");
+        user.setLastName("User");
 
         User updateUser = new User();
-        updateUser.setId(expected.getId());
+        updateUser.setId(1L);
         updateUser.setFirstName("Test");
         updateUser.setLastName("User");
-        user.setEmail("TestUser@mail.com");
+        updateUser.setEmail("TestUser@mail.com");
         updateUser.setAddress("Test address #1");
         updateUser.setBirthDate(LocalDate.of(2000, 5, 16));
         updateUser.setPhoneNumber("035 126 3491");
+        Mockito.when(userRepository.save(updateUser)).thenReturn(updateUser);
 
         User actual = userService.update(updateUser);
 
-        assertEquals(expected, actual);
+        assertEquals(user, actual);
+    }
+
+    @Test
+    public void updateNullUser() {
+        assertThrows(NullEntityReferenceException.class,
+                () -> userService.update(null));
+    }
+
+    @Test
+    public void updateNotValidUser() {
+        User invalidUser = new User();
+        invalidUser.setEmail("invalid email");
+        invalidUser.setFirstName("1");
+        invalidUser.setLastName("   \t\n");
+        invalidUser.setAddress("");
+        invalidUser.setBirthDate(LocalDate.now().plusMonths(6));
+        invalidUser.setPhoneNumber("380465857456481");
+
+        assertThrows(ConstraintViolationException.class, () -> userService.update(invalidUser));
+        try {
+            userService.update(invalidUser);
+        } catch (ConstraintViolationException ex) {
+            Set<ConstraintViolation<?>> constraintViolations = ex.getConstraintViolations();
+            assertEquals(6, constraintViolations.size());
+        }
     }
 
     @Test
     void getAll() {
         int expectedSize = 2;
-        userService.create(user);
-        User newUser = new User();
-        newUser.setEmail("TestUser2@mail.com");
-        newUser.setFirstName("User");
-        newUser.setLastName("Test");
-        newUser.setAddress("Test address #1");
-        newUser.setBirthDate(LocalDate.of(2000, 5, 16));
-        newUser.setPhoneNumber("035 126 3491");
-        userService.create(newUser);
+        Mockito.when(userRepository.findAll()).thenReturn(List.of(
+                user, user
+        ));
+
         List<User> actual = userService.getAll();
 
         assertEquals(expectedSize, actual.size());
@@ -90,8 +152,10 @@ public class UserServiceTest {
 
     @Test
     void delete() {
-        User newUser = userService.create(user);
-        userService.delete(newUser.getId());
+        Mockito.when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(user));
+        Mockito.when(userRepository.findAll()).thenReturn(new LinkedList<>());
+
+        userService.delete(user.getId());
         int expectedSize = 0;
         List<User> actual = userService.getAll();
 
@@ -100,25 +164,34 @@ public class UserServiceTest {
 
     @Test
     public void getByBirthDateRange() {
-        User expected = userService.create(this.user);
+        LocalDate start = LocalDate.of(2000, 1, 1);
+        LocalDate end = LocalDate.of(2000, 12, 31);
+        Mockito.when(userRepository.findByBirthDateRange(start, end)).thenReturn(List.of(user));
+
 
         System.out.println(userService.getAll());
 
-        List<User> actual = userService.getAllByDateRange(LocalDate.of(2000, 1, 1),
-                LocalDate.of(2000, 12, 31));
+        List<User> actual = userService.getAllByDateRange(start, end);
 
-        System.out.println(actual);
-
-        assertEquals(expected, actual.get(0));
+        assertEquals(List.of(user), actual);
     }
 
     @Test
     public void getByBirthDateRangeNotExisted() {
-        userService.create(this.user);
+        LocalDate start = LocalDate.of(2001, 1, 1);
+        LocalDate end = LocalDate.of(2001, 12, 31);
+        Mockito.when(userRepository.findByBirthDateRange(start, end)).thenReturn(new LinkedList<>());
 
-        List<User> actual = userService.getAllByDateRange(LocalDate.of(2001, 1, 1),
-                LocalDate.of(2001, 12, 31));
+        List<User> actual = userService.getAllByDateRange(start, end);
 
         assertEquals(0, actual.size());
+    }
+
+    @Test
+    public void getByBirthDateRangeWhereStartDateGreaterThatEnd() {
+        LocalDate start = LocalDate.of(2001, 1, 1);
+        LocalDate end = LocalDate.of(2001, 12, 31);
+
+        assertThrows(IllegalArgumentException.class, () -> userService.getAllByDateRange(end, start));
     }
 }

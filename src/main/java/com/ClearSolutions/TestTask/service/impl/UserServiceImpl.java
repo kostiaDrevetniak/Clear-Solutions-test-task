@@ -44,7 +44,6 @@ public class UserServiceImpl implements UserService {
         if (user == null)
             throw new NullEntityReferenceException("User cannot be 'null'");
 
-
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         if (!violations.isEmpty()) {
             StringBuilder sb = new StringBuilder();
