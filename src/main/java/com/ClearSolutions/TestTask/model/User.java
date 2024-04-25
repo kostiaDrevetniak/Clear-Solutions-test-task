@@ -1,8 +1,7 @@
-package com.ClearSolutions.TestTask.Model;
+package com.ClearSolutions.TestTask.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
@@ -42,10 +41,11 @@ public class User {
     @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
 
-    @NotBlank(message = "The 'address' cannot be blank")
+    @Pattern(regexp = "^(?=\\s*\\S).*$", message = "The 'address' cannot be blank")
     private String address;
 
-    @Pattern(regexp = "^(\\d{10}|(?:\\d{3}[- ]){2}\\d{4}|\\(\\d{3}\\)\\d{3}-?\\d{4})$")
+    @Pattern(regexp = "^(\\d{10}|(?:\\d{3}[- ]){2}\\d{4}|\\(\\d{3}\\)\\d{3}-?\\d{4})$",
+            message = "Must be a valid phone number")
     private String phoneNumber;
 
 }

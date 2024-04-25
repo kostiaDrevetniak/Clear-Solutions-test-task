@@ -1,7 +1,7 @@
 package com.ClearSolutions.TestTask.repository;
 
 
-import com.ClearSolutions.TestTask.Model.User;
+import com.ClearSolutions.TestTask.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
