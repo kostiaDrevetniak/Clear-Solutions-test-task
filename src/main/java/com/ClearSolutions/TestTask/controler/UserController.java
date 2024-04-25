@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -82,5 +84,22 @@ public class UserController {
     public void deleteUserById(@PathVariable("user_id") long id) {
         log.debug(String.format("request to delete user with id: %s", id));
         userService.delete(id);
+    }
+
+    @GetMapping
+    public List<UserResponse> getAllUsers() {
+        log.debug("request to get all users");
+        return userService.getAll().stream()
+                .map(user -> modelMapper.map(user, UserResponse.class))
+                .toList();
+    }
+
+    @GetMapping
+    public List<UserResponse> getAllUsersByBirthDateRange(@RequestParam("from")LocalDate from,
+                                                          @RequestParam("to") LocalDate to){
+        log.info(String.format("request to get all users with births date from %s to %s", from, to));
+        return userService.getAllByDateRange(from, to).stream()
+                .map(user -> modelMapper.map(user, UserResponse.class))
+                .toList();
     }
 }

@@ -76,6 +76,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAllByDateRange(LocalDate from, LocalDate to) {
+        if (to.isBefore(from))
+            throw new IllegalArgumentException("Birth date range start must be smaller than the end");
         return userRepository.findByBirthDateRange(from, to);
     }
 }
