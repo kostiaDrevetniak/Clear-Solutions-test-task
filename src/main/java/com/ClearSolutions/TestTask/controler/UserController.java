@@ -33,4 +33,17 @@ public class UserController {
         return ResponseEntity.created(URI.create(String.format("api/users/%d", createdUser.getId()))).body(createdUser);
     }
 
+    @GetMapping("/{user_id}")
+    public ResponseEntity<UserDto> getUserById(@PathVariable("user_id") long id) {
+        log.info(String.format("request to get user with id: %s", id));
+        return new ResponseEntity<>(
+                modelMapper.map(userService.readById(id), UserDto.class), HttpStatus.OK
+        );
+    }
+
+    @DeleteMapping("/{user_id}")
+    public void delete(@PathVariable("user_id") long id) {
+        log.debug(String.format("request to delete user with id: %s", id));
+        userService.delete(id);
+    }
 }
