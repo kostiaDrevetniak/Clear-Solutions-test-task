@@ -1,9 +1,6 @@
 package com.ClearSolutions.TestTask.Model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
@@ -24,6 +21,7 @@ import java.time.LocalDate;
 public class User {
 
     @Id
+    @GeneratedValue(generator = "identify")
     private Long id;
 
     @Email(message = "Must be a valid e-mail address")
