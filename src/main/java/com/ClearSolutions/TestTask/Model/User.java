@@ -39,7 +39,7 @@ public class User {
     private String lastName;
 
     @Past(message = "Must be earlier that current date")
-    @Column(nullable = false)
+    @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
 
     @NotBlank(message = "The 'address' cannot be blank")
