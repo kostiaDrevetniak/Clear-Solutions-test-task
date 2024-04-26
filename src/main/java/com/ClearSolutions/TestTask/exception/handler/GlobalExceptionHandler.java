@@ -12,6 +12,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,17 +22,18 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler()
-    public ResponseEntity<?> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+    public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         log.error(ex.getMessage());
         List<ValidationExceptionDto> exceptionDtos =
                 ex.getBindingResult().getFieldErrors().stream()
                         .map(ValidationExceptionDto::new)
+                        .sorted(Comparator.comparing(ValidationExceptionDto::getMessage))
                         .collect(Collectors.toList());
         return ResponseEntity.badRequest().body(exceptionDtos);
     }
 
     @ExceptionHandler
-    public ResponseEntity<?> handleMethodArgumentNotValid(ConstraintViolationException ex) {
+    public ResponseEntity<?> handleConstraintViolationException(ConstraintViolationException ex) {
         log.error(ex.getMessage());
         return ResponseEntity.badRequest().body(new ExceptionResponse(ex));
     }

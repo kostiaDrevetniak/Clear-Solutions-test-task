@@ -13,3 +13,4 @@ public class ValidationExceptionDto {
         this.message = fieldError.getDefaultMessage();
     }
 }
+

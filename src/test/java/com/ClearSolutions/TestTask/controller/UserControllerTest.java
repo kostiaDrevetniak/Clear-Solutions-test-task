@@ -69,7 +69,8 @@ public class UserControllerTest {
                 });
 
         mockMvc.perform(post("/api/users")
-                .contentType(MediaType.APPLICATION_JSON).content("""
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
                         {
                             "email":"TestUser@mail.com",
                             "firstName":"User",
