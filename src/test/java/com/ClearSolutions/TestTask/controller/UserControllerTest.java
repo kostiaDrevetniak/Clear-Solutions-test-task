@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UserControllerTest {
 
     @TestConfiguration
-    static class EmployeeServiceImplTestContextConfiguration {
+    static class UserControllerTestContextConfiguration {
 
         @Bean
         public ModelMapper modelMapper() {
@@ -166,13 +166,13 @@ public class UserControllerTest {
     @Test
     public void getUsersByBirthDateRange() throws Exception {
         user.setId(1L);
-        LocalDate start = LocalDate.of(2000, 1, 1);
-        LocalDate end = LocalDate.of(2000, 12, 31);
+        LocalDate start = LocalDate.of(2005, 1, 1);
+        LocalDate end = LocalDate.of(2005, 12, 31);
         when(userService.getAllByDateRange(eq(start), eq(end))).thenReturn(List.of(user));
 
         mockMvc.perform(get("/api/users/birthDate")
-                .param("from", "2000-01-01")
-                .param("to", "2000-12-31")
+                .param("from", "2005-01-01")
+                .param("to", "2005-12-31")
         )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].id").value(1))
