@@ -13,7 +13,7 @@ import java.lang.annotation.*;
 public @interface ValidAge {
     String message() default "Age must be greater that 18";
 
-    Class<?>[] groups() default { };
+    Class<?>[] groups() default {};
 
-    Class<? extends Payload>[] payload() default { };
+    Class<? extends Payload>[] payload() default {};
 }
