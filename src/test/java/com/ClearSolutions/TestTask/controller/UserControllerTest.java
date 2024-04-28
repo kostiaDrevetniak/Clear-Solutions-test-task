@@ -84,7 +84,7 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.email").value(user.getEmail()))
                 .andExpect(jsonPath("$.firstName").value(user.getFirstName()))
                 .andExpect(jsonPath("$.lastName").value(user.getLastName()))
-                .andExpect(jsonPath("$.birthDate").value("2005-05-16"))
+                .andExpect(jsonPath("$.birthDate").value(user.getBirthDate().toString()))
                 .andExpect(jsonPath("$.address").value(user.getAddress()))
                 .andExpect(jsonPath("$.phoneNumber").value(user.getPhoneNumber()));
     }
@@ -140,7 +140,7 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.email").value(user.getEmail()))
                 .andExpect(jsonPath("$.firstName").value(user.getFirstName()))
                 .andExpect(jsonPath("$.lastName").value(user.getLastName()))
-                .andExpect(jsonPath("$.birthDate").value("2005-05-16"))
+                .andExpect(jsonPath("$.birthDate").value(user.getBirthDate().toString()))
                 .andExpect(jsonPath("$.address").value(user.getAddress()))
                 .andExpect(jsonPath("$.phoneNumber").value(user.getPhoneNumber()));
     }
@@ -156,7 +156,7 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.[0].email").value(user.getEmail()))
                 .andExpect(jsonPath("$.[0].firstName").value(user.getFirstName()))
                 .andExpect(jsonPath("$.[0].lastName").value(user.getLastName()))
-                .andExpect(jsonPath("$.[0].birthDate").value("2005-05-16"))
+                .andExpect(jsonPath("$.[0].birthDate").value(user.getBirthDate().toString()))
                 .andExpect(jsonPath("$.[0].address").value(user.getAddress()))
                 .andExpect(jsonPath("$.[0].phoneNumber").value(user.getPhoneNumber()))
                 .andExpect(jsonPath("$.length()").value(1));
@@ -171,15 +171,15 @@ public class UserControllerTest {
         when(userService.getAllByDateRange(eq(start), eq(end))).thenReturn(List.of(user));
 
         mockMvc.perform(get("/api/users/birthDate")
-                .param("from", "2005-01-01")
-                .param("to", "2005-12-31")
+                .param("from", start.toString())
+                .param("to", end.toString())
         )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].id").value(1))
                 .andExpect(jsonPath("$.[0].email").value(user.getEmail()))
                 .andExpect(jsonPath("$.[0].firstName").value(user.getFirstName()))
                 .andExpect(jsonPath("$.[0].lastName").value(user.getLastName()))
-                .andExpect(jsonPath("$.[0].birthDate").value("2005-05-16"))
+                .andExpect(jsonPath("$.[0].birthDate").value(user.getBirthDate().toString()))
                 .andExpect(jsonPath("$.[0].address").value(user.getAddress()))
                 .andExpect(jsonPath("$.[0].phoneNumber").value(user.getPhoneNumber()))
                 .andExpect(jsonPath("$.length()").value(1));

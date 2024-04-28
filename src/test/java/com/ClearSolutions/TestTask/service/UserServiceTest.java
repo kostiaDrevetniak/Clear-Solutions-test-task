@@ -44,7 +44,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void createNormalUser() {
+    public void createValidUser() {
         Mockito.when(userRepository.save(user)).thenReturn(user);
 
         User actual = userService.create(user);
@@ -79,7 +79,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void readByExistedId() {
+    public void readByExistedId() {
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(user));
 
         User actual = userService.readById(1);
@@ -88,12 +88,12 @@ public class UserServiceTest {
     }
 
     @Test
-    void readByNotExistedId() {
+    public void readByNotExistedId() {
         assertThrows(EntityNotFoundException.class, () -> userService.readById(5));
     }
 
     @Test
-    void updateExistedUser() {
+    public void updateExistedUser() {
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(user));
         user.setFirstName("Test");
         user.setLastName("User");
@@ -139,7 +139,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void getAll() {
+    public void getAllUsers() {
         int expectedSize = 2;
         Mockito.when(userRepository.findAll()).thenReturn(List.of(
                 user, user
@@ -151,7 +151,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void delete() {
+    public void deleteUser() {
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(user));
         Mockito.when(userRepository.findAll()).thenReturn(new LinkedList<>());
 

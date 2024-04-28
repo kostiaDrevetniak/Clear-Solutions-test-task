@@ -19,7 +19,7 @@ public class AgeValidatorTest {
     AgeValidator ageValidator;
 
     @Test
-    public void validBirthDateTest() {
+    public void validBirthDate() {
         ConstraintValidatorContext mock = Mockito.mock(ConstraintValidatorContext.class);
 
         boolean valid = ageValidator.isValid(LocalDate.of(2005, 1, 19), mock);
@@ -28,7 +28,7 @@ public class AgeValidatorTest {
     }
 
     @Test
-    public void validateWrongBirthDateTest() {
+    public void validateWrongBirthDate() {
         ConstraintValidatorContext mock = Mockito.mock(ConstraintValidatorContext.class);
 
         boolean valid = ageValidator.isValid(LocalDate.of(2015, 1, 19), mock);
@@ -37,7 +37,7 @@ public class AgeValidatorTest {
     }
 
     @Test
-    public void validateNullBirthDateTest() {
+    public void validateNullBirthDate() {
         ConstraintValidatorContext mock = Mockito.mock(ConstraintValidatorContext.class);
 
         boolean valid = ageValidator.isValid(null, mock);
