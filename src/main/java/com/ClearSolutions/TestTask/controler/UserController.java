@@ -47,13 +47,8 @@ public class UserController {
         log.debug(String.format("request to update user id: %d with values: %s", id, userRequest.toString()));
         User user = modelMapper.map(userRequest, User.class);
         user.setId(id);
-        return new ResponseEntity<>(
-                modelMapper.map(
-                        userService.update(user),
-                        UserResponse.class
-                ),
-                HttpStatus.OK
-        );
+        userService.update(user);
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{user_id}")
@@ -63,13 +58,8 @@ public class UserController {
         User user = modelMapper.map(userRequest, User.class);
         User existedUser = userService.readById(id);
         patcher.patch(existedUser, user);
-        return new ResponseEntity<>(
-                modelMapper.map(
-                        userService.update(existedUser),
-                        UserResponse.class
-                ),
-                HttpStatus.OK
-        );
+        userService.update(existedUser);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{user_id}")
@@ -94,7 +84,7 @@ public class UserController {
                 .toList();
     }
 
-    @GetMapping("/birtDate")
+    @GetMapping("/birthDate")
     public List<UserResponse> getAllUsersByBirthDateRange(@RequestParam("from")LocalDate from,
                                                           @RequestParam("to") LocalDate to){
         log.info(String.format("request to get all users with births date from %s to %s", from, to));

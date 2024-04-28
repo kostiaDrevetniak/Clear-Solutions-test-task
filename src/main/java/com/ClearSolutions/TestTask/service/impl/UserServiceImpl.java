@@ -12,8 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +32,8 @@ public class UserServiceImpl implements UserService {
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         if (!violations.isEmpty()) {
             StringBuilder sb = new StringBuilder();
-            for (ConstraintViolation<User> constraintViolation : violations) {
+            for (ConstraintViolation<User> constraintViolation : violations.stream()
+                    .sorted(Comparator.comparing(ConstraintViolation::getMessage)).collect(Collectors.toList())) {
                 sb.append("\t").append(constraintViolation.getMessage()).append("\n");
             }
             throw new ConstraintViolationException("Error occurred:\n" + sb.toString(), violations);
@@ -44,11 +47,11 @@ public class UserServiceImpl implements UserService {
         if (user == null)
             throw new NullEntityReferenceException("User cannot be 'null'");
 
-
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         if (!violations.isEmpty()) {
             StringBuilder sb = new StringBuilder();
-            for (ConstraintViolation<User> constraintViolation : violations) {
+            for (ConstraintViolation<User> constraintViolation : violations.stream()
+                    .sorted(Comparator.comparing(ConstraintViolation::getMessage)).collect(Collectors.toList())) {
                 sb.append("\t").append(constraintViolation.getMessage()).append("\n");
             }
             throw new ConstraintViolationException("Error occurred:\n" + sb.toString(), violations);
